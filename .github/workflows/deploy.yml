@@ -11,8 +11,8 @@ jobs:
     environment: testing
     env:
       MONGODB_CLUSTER_ADDRESS: testcluster.9umsb.mongodb.net
-      MONGODB_USERNAME: kminsub
-      MONGODB_PASSWORD: iQ3SLc8sqCo5pJLn
+      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
+      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
       PORT: 8080
     runs-on: ubuntu-latest
     steps:
@@ -40,7 +40,7 @@ jobs:
         # 파이프가 없으면 YAML 파서가 $나 { }를 특별한 문법으로 해석하려고 시도할 수 있어서
         # 의도하지 않은 동작이나 오류가 발생할 수 있습니다
         run: | 
-          echo "MONGODB_USER_NAME: ${{ env.MONGODB_USERNAME }}"
+          echo "MONGODB_USER_NAME: ${{ secrets.MONGODB_USERNAME }}"
           echo "MONGODB_DB_NAME: $MONGODB_DB_NAME"
   deploy:
     needs: test
@@ -48,5 +48,5 @@ jobs:
     steps:
       - name: Output information
         run: |        
-          echo "MONGODB_USER_NAME: ${{ env.MONGODB_USERNAME }}"
+          echo "MONGODB_USER_NAME: ${{ secrets.MONGODB_USERNAME }}"
           echo "MONGODB_DB_NAME: $MONGODB_DB_NAME"
