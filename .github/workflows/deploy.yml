@@ -33,7 +33,13 @@ jobs:
       - name: Run tests
         run: npm test
       - name: Output information
-        run: |
+        # YAML에서 | 파이프 문자는 여러 줄의 문자열을 작성할 때 사용하는 블록 스타일 표시입니다
+        # $ 나 { } 같은 특수문자가 있을 때 반드시 파이프를 써야하는 것은 아니지만
+        # YAML 파서가 이런 특수문자들을 문자 그대로 해석하도록 하기 위해
+        # 파이프를 사용하는 것이 안전하고 권장되는 방법입니다
+        # 파이프가 없으면 YAML 파서가 $나 { }를 특별한 문법으로 해석하려고 시도할 수 있어서
+        # 의도하지 않은 동작이나 오류가 발생할 수 있습니다
+        run: | 
           echo "MONGODB_USER_NAME: ${{ env.MONGODB_USERNAME }}"
           echo "MONGODB_DB_NAME: $MONGODB_DB_NAME"
   deploy:
@@ -42,4 +48,5 @@ jobs:
     steps:
       - name: Output information
         run: |        
-          echo "..."
+          echo "MONGODB_USER_NAME: ${{ env.MONGODB_USERNAME }}"
+          echo "MONGODB_DB_NAME: $MONGODB_DB_NAME"
