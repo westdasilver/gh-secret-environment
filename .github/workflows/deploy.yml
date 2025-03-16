@@ -1,0 +1,45 @@
+name: Deployment
+on:
+  push:
+    branches:
+      - main
+      - dev
+env:
+  MONGODB_DB_NAME: gha-demo
+jobs:
+  test:
+    environment: testing
+    env:
+      MONGODB_CLUSTER_ADDRESS: testcluster.9umsb.mongodb.net
+      MONGODB_USERNAME: kminsub
+      MONGODB_PASSWORD: iQ3SLc8sqCo5pJLn
+      PORT: 8080
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-deps-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Run server
+        # wait-on은 특정 리소스(포트, 파일, http 엔드포인트 등)가 사용 가능할 때까지 기다리는 CLI 도구입니다.
+        # 여기서는 서버가 $PORT에서 완전히 시작될 때까지 기다립니다.
+        # & 기호는 백그라운드에서 서버를 실행하게 해줍니다.
+        run: npm start & npx wait-on http://127.0.0.1:$PORT
+      - name: Run tests
+        run: npm test
+      - name: Output information
+        run: |
+          echo "MONGODB_USER_NAME: ${{ env.MONGODB_USERNAME }}"
+          echo "MONGODB_DB_NAME: $MONGODB_DB_NAME"
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        run: |        
+          echo "..."
